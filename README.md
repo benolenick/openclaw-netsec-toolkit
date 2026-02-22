@@ -53,14 +53,60 @@ sudo apt install nmap openssl curl iptables ufw dnsutils whois docker.io wireles
 
 ## Installation
 
+OpenClaw auto-discovers any directory containing a `SKILL.md` file under `~/.openclaw/skills/`. No registration or manifest needed — just drop the skill folders in and they're available.
+
+### Option 1: Clone the whole toolkit (recommended)
+
 ```bash
-# Clone or copy to the OpenClaw skills directory
-mkdir -p ~/.openclaw/skills
-cp -r ssl-audit firewall-audit log-analyzer dns-recon container-scan wifi-survey ~/.openclaw/skills/
+# Clone directly into the OpenClaw skills directory
+git clone https://github.com/benolenick/openclaw-netsec-toolkit.git ~/.openclaw/skills
 
 # Make scripts executable
 chmod +x ~/.openclaw/skills/*/scripts/*.py
+
+# Install system dependencies (all at once)
+sudo apt install nmap openssl curl dnsutils whois docker.io wireless-tools network-manager iw
 ```
+
+### Option 2: Install individual skills
+
+```bash
+# Clone to a temp location, then copy only the skills you want
+git clone https://github.com/benolenick/openclaw-netsec-toolkit.git /tmp/netsec-toolkit
+mkdir -p ~/.openclaw/skills
+
+# Copy individual skills (pick what you need)
+cp -r /tmp/netsec-toolkit/ssl-audit ~/.openclaw/skills/
+cp -r /tmp/netsec-toolkit/firewall-audit ~/.openclaw/skills/
+
+# Make scripts executable
+chmod +x ~/.openclaw/skills/*/scripts/*.py
+
+# Clean up
+rm -rf /tmp/netsec-toolkit
+```
+
+### Option 3: Add to an existing skills directory
+
+If you already have skills installed at `~/.openclaw/skills/`:
+
+```bash
+cd ~/.openclaw/skills
+git clone https://github.com/benolenick/openclaw-netsec-toolkit.git /tmp/netsec-toolkit
+cp -r /tmp/netsec-toolkit/{ssl-audit,firewall-audit,log-analyzer,dns-recon,container-scan,wifi-survey,netsec-briefing} .
+chmod +x */scripts/*.py
+rm -rf /tmp/netsec-toolkit
+```
+
+### Verify installation
+
+After installing, confirm the skills are detected by asking your OpenClaw agent any trigger phrase:
+
+- *"scan my network"* — should activate netsec-briefing
+- *"check ssl on example.com"* — should activate ssl-audit
+- *"audit my firewall"* — should activate firewall-audit
+
+Skills load on next agent startup. No restart is required if the agent is already watching the skills directory.
 
 ## Skill Directory Structure
 
